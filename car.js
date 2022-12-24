@@ -19,7 +19,7 @@ class Car {
       this.sensor = new Sensor(this);
 
       // Layers. First one is inputs. Last is outputs. Others are hidden
-      this.brain = new NeuralNetwork([this.sensor.rayCount, 6, 4]);
+      this.brain = new NeuralNetwork([this.sensor.rayCount, ...LAYERS]);
     }
 
 
@@ -52,7 +52,6 @@ class Car {
     if (this.sensor) {
       this.sensor.update(roadBorders, traffic);
       const offsets = this.sensor.readings.map(s => s==null ? 0 : 1-s.offset)
-      console.log(this.brain);
       const outputs = NeuralNetwork.feedForward(offsets, this.brain)
 
       if (this.useBrain) {

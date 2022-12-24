@@ -1,5 +1,6 @@
 const carCanvas = document.getElementById("carCanvas");
 carCanvas.width = 200;
+
 const networkCanvas = document.getElementById("networkCanvas");
 networkCanvas.width = 300;
 
@@ -9,33 +10,32 @@ const networkCtx = networkCanvas.getContext("2d");
 const road = new Road(carCanvas.width / 2, carCanvas.width * 0.9);
 
 // Initiate player car
-const playerCar = createPlayerCar()
+const playerCar = createPlayerCar();
 
-const N = 100;
-const cars = generateCars(N);
+const cars = generateCars(AMOUNT_OF_AI_CARS);
+
 let bestCar = cars[0];
 if (localStorage.getItem("bestBrain")) {
   for (let i = 0; i < cars.length; i++) {
     cars[i].brain = JSON.parse(localStorage.getItem("bestBrain"));
     if (i != 0) {
-      NeuralNetwork.mutate(cars[i].brain, 0.05);
+      NeuralNetwork.mutate(cars[i].brain, LEARNING_RATE);
     }
   }
 }
 
 const generateTraffic = () => {
-  const AMOUNT_OF_CARS = 50;
   const traffic = [];
 
-    let addedDistance = 200
+  let addedDistance = 200;
 
-  for (let i = 0; i < AMOUNT_OF_CARS; i++) {
+  for (let i = 0; i < AMOUNT_OF_TRAFFIC_CARS; i++) {
     const distance = Math.random() * 50;
-    addedDistance += distance
+    addedDistance += distance;
     traffic.push(
       new Car(
         road.getLaneCenter(Math.floor(Math.random() * 3)),
-        (i * 150 + addedDistance)*-1,
+        (i * 150 + addedDistance) * -1,
         30,
         50,
         "DUMMY",
@@ -47,7 +47,7 @@ const generateTraffic = () => {
       traffic.push(
         new Car(
           road.getLaneCenter(Math.floor(Math.random() * 3)),
-          (i * 150 + addedDistance)*-1,
+          (i * 150 + addedDistance) * -1,
           30,
           50,
           "DUMMY",
@@ -83,9 +83,17 @@ function generateCars(N) {
 
 // Create player controlled car
 function createPlayerCar() {
-    const playerCar = new Car(road.getLaneCenter(1), -100, 30, 50, "PLAYER", 3.1, "cyan")
+  const playerCar = new Car(
+    road.getLaneCenter(1),
+    -100,
+    30,
+    50,
+    "PLAYER",
+    3.1,
+    "cyan"
+  );
 
-    return playerCar
+  return playerCar;
 }
 
 function animate(time) {
@@ -97,27 +105,35 @@ function animate(time) {
   }
   bestCar = cars.find((c) => c.y == Math.min(...cars.map((c) => c.y)));
 
-  playerCar.update(road.borders, [])
+  playerCar.update(road.borders, []);
 
   carCanvas.height = window.innerHeight;
   networkCanvas.height = window.innerHeight;
-
 
   carCtx.save();
 
   //* Follows the player car
   // Only follows y-value
-  //carCtx.translate(0, -playerCar.y + carCanvas.height * 0.7);
+  if (FOLLOW === "PLAYER_Y")
+    carCtx.translate(0, -playerCar.y + carCanvas.height * 0.7);
   // Both y and x
-  carCtx.translate(-playerCar.x + carCanvas.width * 0.5, -playerCar.y + carCanvas.height * 0.7);
-  
+  if (FOLLOW === "PLAYER_XY")
+    carCtx.translate(
+      -playerCar.x + carCanvas.width * 0.5,
+      -playerCar.y + carCanvas.height * 0.7
+    );
 
   //* Follows bestCar (car in front)
-  // Only follows y-value
-//   carCtx.translate(0, -bestCar.y + carCanvas.height * 0.7);
-  // Both y and x
-//   carCtx.translate(-bestCar.x + carCanvas.width * 0.5, -bestCar.y + carCanvas.height * 0.7);
 
+  // Only follows y-value
+  if (FOLLOW === "BEST_Y")
+    carCtx.translate(0, -bestCar.y + carCanvas.height * 0.7);
+  // Both y and x
+  if (FOLLOW === "BEST_XY")
+    carCtx.translate(
+      -bestCar.x + carCanvas.width * 0.5,
+      -bestCar.y + carCanvas.height * 0.7
+    );
 
   road.draw(carCtx);
   for (let i = 0; i < traffic.length; i++) {
@@ -130,7 +146,7 @@ function animate(time) {
   carCtx.globalAlpha = 1;
   bestCar.draw(carCtx, true);
 
-  playerCar.draw(carCtx, false)
+  playerCar.draw(carCtx, false);
 
   carCtx.restore();
 
