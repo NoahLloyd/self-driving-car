@@ -1,5 +1,5 @@
 const carCanvas = document.getElementById("carCanvas");
-carCanvas.width = 200;
+carCanvas.width = AMOUNT_OF_LANES*60;
 
 const networkCanvas = document.getElementById("networkCanvas");
 networkCanvas.width = 300;
@@ -32,21 +32,11 @@ const generateTraffic = () => {
   for (let i = 0; i < AMOUNT_OF_TRAFFIC_CARS; i++) {
     const distance = Math.random() * 50;
     addedDistance += distance;
-    traffic.push(
-      new Car(
-        road.getLaneCenter(Math.floor(Math.random() * 3)),
-        (i * 150 + addedDistance) * -1,
-        30,
-        50,
-        "DUMMY",
-        2,
-        getRandomColor()
-      )
-    );
-    if (distance > 20) {
+
+    for (let j = 0;j < Math.floor(AMOUNT_OF_LANES * Math.random()*1); j++) {
       traffic.push(
         new Car(
-          road.getLaneCenter(Math.floor(Math.random() * 3)),
+          road.getLaneCenter(Math.floor(Math.random() * AMOUNT_OF_LANES)),
           (i * 150 + addedDistance) * -1,
           30,
           50,
@@ -76,7 +66,7 @@ function discard() {
 function generateCars(N) {
   const cars = [];
   for (let i = 1; i <= N; i++) {
-    cars.push(new Car(road.getLaneCenter(1), 100, 30, 50, "AI"));
+    cars.push(new Car(road.getLaneCenter(Math.floor(AMOUNT_OF_LANES/2)), 100, 30, 50, "AI"));
   }
   return cars;
 }
@@ -84,7 +74,7 @@ function generateCars(N) {
 // Create player controlled car
 function createPlayerCar() {
   const playerCar = new Car(
-    road.getLaneCenter(1),
+    road.getLaneCenter(Math.floor(AMOUNT_OF_LANES/2)),
     -100,
     30,
     50,

@@ -1,7 +1,7 @@
 class Sensor {
   constructor(car) {
     this.car = car;
-    this.rayCount =11
+    this.rayCount = AMOUNT_OF_SENSOR_RAYS
     this.rayLength = 160;
     this.raySpread = Math.PI / 2;
 
@@ -89,12 +89,13 @@ class Sensor {
       ctx.lineTo(end.x, end.y);
       ctx.stroke();
 
-      ctx.beginPath();
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = "black";
-      ctx.moveTo(this.rays[i][1].x, this.rays[i][1].y);
-      ctx.lineTo(end.x, end.y);
-      ctx.stroke();
+      //* Displays in black where there is an obstacle
+      // ctx.beginPath();
+      // ctx.lineWidth = 2;
+      // ctx.strokeStyle = "black";
+      // ctx.moveTo(this.rays[i][1].x, this.rays[i][1].y);
+      // ctx.lineTo(end.x, end.y);
+      // ctx.stroke();
     }
   }
 }
